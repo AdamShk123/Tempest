@@ -1,51 +1,124 @@
 #include "../include/main.hpp"
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
-int main( int argc, char* args[] )
+int main(int argc, char *argv[])
 {
-	//The window we'll be rendering to
-	SDL_Window* window = NULL;
-	
-	//The surface contained by the window
-	SDL_Surface* screenSurface = NULL;
+    SDL_Window *window = NULL;
 
-	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+    window = initWindow();
+
+	if(window == NULL)
 	{
-		printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
+		printf( "Failed to initialize!\n" );
 	}
 	else
 	{
-		//Create window
-		window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
-		if( window == NULL )
+		//Load media
+		if(!loadMedia(window))
 		{
-			printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
+			printf( "Failed to load media!\n" );
 		}
 		else
-		{
-			//Get window surface
-			screenSurface = SDL_GetWindowSurface( window );
+		{	
+			//Main loop flag
+			bool quit = false;
 
-			//Fill the surface white
-			SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) );
-			
-			//Update the surface
-			SDL_UpdateWindowSurface( window );
-            
-            //Hack to get window to stay up
-            SDL_Event e; bool quit = false; while( quit == false ){ while( SDL_PollEvent( &e ) ){ if( e.type == SDL_QUIT ) quit = true; } }
+			//Event handler
+			SDL_Event e;
+
+			//While application is running
+			while(!quit)
+			{
+				//Handle events on queue
+				while(SDL_PollEvent(&e) != 0)
+				{
+					//User requests quit
+					if(e.type == SDL_QUIT)
+					{
+						quit = true;
+					}
+				}
+
+                SDL_Renderer *renderer = SDL_GetRenderer(window);
+
+				int w;
+				int h;
+				SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
+				SDL_Rect rect;
+				rect.x = 0;
+				rect.y = 0;
+				rect.w = w;
+				rect.h = h;
+				
+
+				//Clear screen
+				SDL_RenderClear(renderer);
+
+				//Render texture to screen
+				SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+				//Update screen
+				SDL_RenderPresent(renderer);
+			}
 		}
 	}
 
-	//Destroy window
-	SDL_DestroyWindow( window );
-
-	//Quit SDL subsystems
-	SDL_Quit();
+	//Free resources and close SDL
+	close(window);
 
 	return 0;
+}
+
+void close(SDL_Window *window)
+{
+	//Free loaded image
+	SDL_DestroyTexture(texture);
+	texture = NULL;
+
+	//Destroy window	
+	SDL_DestroyRenderer(SDL_GetRenderer(window));
+	SDL_DestroyWindow(window);
+
+	//Quit SDL subsystems
+	IMG_Quit();
+	SDL_Quit();
+}
+
+SDL_Window *initWindow()
+{
+    SDL_Window *window = NULL;
+
+    // init SDL
+    if(SDL_Init(SDL_INIT_VIDEO))
+    {
+        std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
+    }
+    else
+    {
+        // create window
+        window = SDL_CreateWindow("Tempest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        if(window == NULL)
+        {
+            std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << "\n";
+        }
+        else
+        {
+            //Create renderer for window
+            SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            if(renderer == NULL)
+            {
+                std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << "\n";
+            }
+            else
+            {
+                int imgFlags = IMG_INIT_JPG;
+                if(!(IMG_Init(imgFlags) & imgFlags))
+                {
+                    std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << "\n";
+                }
+            }
+        }
+    }
+    
+    return window;
 }
