@@ -1,6 +1,6 @@
-all: compile link
+all: clean compile link
 
-FILES := src/*
+FILES := src/main.cpp src/media.cpp
 
 LIBS := -l SDL2main -l SDL2 -l SDL2_image -l SDL2_mixer
 
