@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <string>
+#include <unordered_map>
+#include <memory>
 
 // functions
 bool loadMedia(SDL_Window *window);

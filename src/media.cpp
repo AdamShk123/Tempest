@@ -1,7 +1,8 @@
 #include "../include/media.hpp"
 
-// global variables
 SDL_Texture *texture;
+
+//class Background
 
 bool loadMedia(SDL_Window *window)
 {
