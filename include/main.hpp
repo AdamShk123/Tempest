@@ -12,7 +12,7 @@
 #include <SDL2/SDL_mixer.h>
 
 // UI
-#include "nuklear.h"
+//#include "nuklear.h"
 
 // ECS
 #include "entt.hpp"
@@ -23,23 +23,31 @@
 #include <unordered_map>
 #include <thread>
 #include <chrono>
+#include <fstream>
+#include <sstream>
 
 // header files
 #include "media.hpp"
+#include "components.hpp"
+#include "window.hpp"
+#include "game.hpp"
+//#include "interface.hpp"
 
 // externs
 extern SDL_Texture *texture;
 
-// screen dimension constants
-const int SCREEN_WIDTH = 1920;
-const int SCREEN_HEIGHT = 1080;
+// struct Block
+// {
+//     int x;
+//     int y;
+// };
 
-entt::scheduler<uint32_t> scheduler;
-
-// same as declaring entt::basic_registry<uint32_t> registry;
-entt::basic_registry<uint32_t> registry;
+// // globals
+// std::vector<Block> blocks;
 
 // functions
 SDL_Window *initWindow();
 
 void close(SDL_Window *window);
+
+void loadLevel(std::string path);

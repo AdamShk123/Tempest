@@ -2,18 +2,22 @@
 
 int main(int argc, char *argv[])
 {
-    SDL_Window *window = NULL;
+	//
+	Window window;
 
-    window = initWindow();
+	Game game(&window);
 
-	if(window == NULL)
+	SDL_Texture *texture = loadTexture("resources/images/cat2.jpg", window.getRenderer());
+
+	
+	if(&window == NULL)
 	{
 		printf( "Failed to initialize!\n" );
 	}
 	else
 	{
 		//Load media
-		if(!loadMedia(window))
+		if(false)
 		{
 			printf( "Failed to load media!\n" );
 		}
@@ -38,7 +42,9 @@ int main(int argc, char *argv[])
 					}
 				}
 
-                SDL_Renderer *renderer = SDL_GetRenderer(window);
+				//Top left corner viewport
+                SDL_Rect viewport = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+                SDL_RenderSetViewport(window.getRenderer(), &viewport);
 
 				int w;
 				int h;
@@ -49,76 +55,58 @@ int main(int argc, char *argv[])
 				rect.y = 0;
 				rect.w = w;
 				rect.h = h;
-				
 
-				//Clear screen
-				SDL_RenderClear(renderer);
-
-				//Render texture to screen
-				SDL_RenderCopy(renderer, texture, NULL, &rect);
-
-				//Update screen
-				SDL_RenderPresent(renderer);
+				window.clear();
+				game.update();
+				window.draw(texture,&rect);
+				window.render();
 			}
 		}
-	}
-
-	//Free resources and close SDL
-	close(window);
-
-	return 0;
-}
-
-void close(SDL_Window *window)
-{
-	//Free loaded image
-	SDL_DestroyTexture(texture);
-	texture = NULL;
-
-	//Destroy window	
-	SDL_DestroyRenderer(SDL_GetRenderer(window));
-	SDL_DestroyWindow(window);
-
-	//Quit SDL subsystems
-	IMG_Quit();
-	SDL_Quit();
-}
-
-SDL_Window *initWindow()
-{
-    SDL_Window *window = NULL;
-
-    // init SDL
-    if(SDL_Init(SDL_INIT_VIDEO))
-    {
-        std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << "\n";
     }
-    else
-    {
-        // create window
-        window = SDL_CreateWindow("Tempest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_FULLSCREEN_DESKTOP);
-        if(window == NULL)
-        {
-            std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << "\n";
-        }
-        else
-        {
-            //Create renderer for window
-            SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            if(renderer == NULL)
-            {
-                std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << "\n";
-            }
-            else
-            {
-                int imgFlags = IMG_INIT_JPG;
-                if(!(IMG_Init(imgFlags) & imgFlags))
-                {
-                    std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << "\n";
-                }
-            }
-        }
-    }
-    
-    return window;
 }
+
+// void loadLevel(std::string path)
+// {
+// 	std::fstream file;
+
+// 	std::string line;
+
+// 	file.open(path, std::ios_base::in);
+
+// 	SDL_Rect fillRect;
+
+// 	if(file.is_open())
+// 	{
+// 		int y = 0;
+// 		while(std::getline(file, line))
+// 		{
+// 			int x = 0;
+// 			int lineX = 0;
+// 			char c = ' ';
+// 			fillRect.y = y * 16;
+// 			while(lineX != line.size())
+// 			{
+// 				c = line[lineX];
+// 				//std::cout << "x: " << x << "y: " << y << "\n";
+// 				if(c == '1')
+// 				{
+// 					fillRect.x = x * 16;
+// 					Block b = {x,y};
+// 					blocks.push_back(b);
+// 					x++;
+// 					lineX++;
+// 				}
+// 				else if(c == '0')
+// 				{
+// 					x++;
+// 					lineX++;
+// 				}
+// 				else
+// 				{
+// 					lineX++;
+// 				}
+// 			}
+// 			y++;
+// 		}
+// 	}	
+// }
