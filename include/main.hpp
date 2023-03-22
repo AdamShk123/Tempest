@@ -11,6 +11,8 @@
 
 #include <SDL2/SDL_mixer.h>
 
+#include <SDL2/SDL_ttf.h>
+
 // UI
 //#include "nuklear.h"
 
@@ -31,23 +33,10 @@
 #include "components.hpp"
 #include "window.hpp"
 #include "game.hpp"
-//#include "interface.hpp"
+#include "system.hpp"
 
 // externs
 extern SDL_Texture *texture;
 
-// struct Block
-// {
-//     int x;
-//     int y;
-// };
-
-// // globals
-// std::vector<Block> blocks;
-
 // functions
-SDL_Window *initWindow();
-
-void close(SDL_Window *window);
-
-void loadLevel(std::string path);
+//void loadLevel(std::string path);

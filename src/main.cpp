@@ -2,14 +2,32 @@
 
 int main(int argc, char *argv[])
 {
-	//
 	Window window;
 
 	Game game(&window);
 
+	TTF_Init();
+
 	SDL_Texture *texture = loadTexture("resources/images/cat2.jpg", window.getRenderer());
 
-	
+	TTF_Font *font = TTF_OpenFont("resouces/fonts/Roboto-Black.ttf",20);
+
+	entt::registry registry;
+
+	auto playerEntity = registry.create();
+
+	registry.emplace<Position>(playerEntity,0,0);
+	registry.emplace<Velocity>(playerEntity,0.0f,0.0f);
+	registry.emplace<Texture>(playerEntity,texture);
+
+	std::vector<System*> systems;
+
+	MoveSystem moveSystem;
+	DrawSystem drawSystem(&window);
+
+	systems.push_back(&moveSystem);
+	systems.push_back(&drawSystem);
+
 	if(&window == NULL)
 	{
 		printf( "Failed to initialize!\n" );
@@ -28,7 +46,7 @@ int main(int argc, char *argv[])
 
 			//Event handler
 			SDL_Event e;
-
+			
 			//While application is running
 			while(!quit)
 			{
@@ -46,19 +64,44 @@ int main(int argc, char *argv[])
                 SDL_Rect viewport = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
                 SDL_RenderSetViewport(window.getRenderer(), &viewport);
 
-				int w;
-				int h;
-				SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+				Velocity vel = registry.get<Velocity>(playerEntity);
 
-				SDL_Rect rect;
-				rect.x = 0;
-				rect.y = 0;
-				rect.w = w;
-				rect.h = h;
+				const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+				if(currentKeyStates[SDL_SCANCODE_UP])
+				{
+					vel.dy = -1;
+				}
+				else if(currentKeyStates[SDL_SCANCODE_DOWN])
+				{
+					vel.dy = 1;
+				}
+				else
+				{
+					vel.dy = 0;
+				}
+
+				if(currentKeyStates[SDL_SCANCODE_RIGHT])
+				{
+					vel.dx = 1;
+				}
+				else if(currentKeyStates[SDL_SCANCODE_LEFT])
+				{
+					vel.dx = -1;
+				}
+				else
+				{
+					vel.dx = 0;
+				}
+				
+				registry.replace<Velocity>(playerEntity,vel);
 
 				window.clear();
-				game.update();
-				window.draw(texture,&rect);
+
+				for(System *s : systems)
+				{
+					s->update(&registry);
+				}
+
 				window.render();
 			}
 		}
