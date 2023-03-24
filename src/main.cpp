@@ -28,6 +28,15 @@ int main(int argc, char *argv[])
 	systems.push_back(&moveSystem);
 	systems.push_back(&drawSystem);
 
+	InputManager inputManager;
+
+	std::unordered_map<std::string, bool> events;
+
+	events["up"] = false;
+	events["down"] = false;
+	events["left"] = false;
+	events["right"] = false;
+
 	if(&window == NULL)
 	{
 		printf( "Failed to initialize!\n" );
@@ -50,9 +59,39 @@ int main(int argc, char *argv[])
 			//While application is running
 			while(!quit)
 			{
+				bool yChanged = false;
+				bool xChanged = false;
+
 				//Handle events on queue
 				while(SDL_PollEvent(&e) != 0)
 				{
+					std::string event = inputManager.checkEvents(&e);
+				
+					if(event == "up")
+					{
+						if(!yChanged)
+						{
+							events.insert_or_assign(event,true);
+							yChanged = true;
+						}
+					}
+					else if(event == "down")
+					{
+						if(!yChanged)
+						{
+							events.insert_or_assign(event,true);
+							yChanged = true;
+						}
+					}
+					else
+					{
+						if(!yChanged)
+						{
+							events.insert_or_assign("up",true);
+							events.insert_or_assign("down",true);
+						}
+					}
+
 					//User requests quit
 					if(e.type == SDL_QUIT)
 					{
@@ -65,33 +104,6 @@ int main(int argc, char *argv[])
                 SDL_RenderSetViewport(window.getRenderer(), &viewport);
 
 				Velocity vel = registry.get<Velocity>(playerEntity);
-
-				const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-				if(currentKeyStates[SDL_SCANCODE_UP])
-				{
-					vel.dy = -1;
-				}
-				else if(currentKeyStates[SDL_SCANCODE_DOWN])
-				{
-					vel.dy = 1;
-				}
-				else
-				{
-					vel.dy = 0;
-				}
-
-				if(currentKeyStates[SDL_SCANCODE_RIGHT])
-				{
-					vel.dx = 1;
-				}
-				else if(currentKeyStates[SDL_SCANCODE_LEFT])
-				{
-					vel.dx = -1;
-				}
-				else
-				{
-					vel.dx = 0;
-				}
 				
 				registry.replace<Velocity>(playerEntity,vel);
 

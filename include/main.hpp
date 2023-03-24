@@ -34,6 +34,7 @@
 #include "window.hpp"
 #include "game.hpp"
 #include "system.hpp"
+#include "input.hpp"
 
 // externs
 extern SDL_Texture *texture;
