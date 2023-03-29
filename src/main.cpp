@@ -1,8 +1,9 @@
 #include "../include/main.hpp"
+#include <SDL2/SDL_render.h>
 
 int main(int argc, char *argv[])
 {
-	Window window;
+    Window window;
 
 	Game game(&window);
 
@@ -16,18 +17,22 @@ int main(int argc, char *argv[])
 
 	auto playerEntity = registry.create();
 
-	registry.emplace<Position>(playerEntity,0,0);
+	registry.emplace<Position>(playerEntity,0.0f,0.0f);
 	registry.emplace<Velocity>(playerEntity,0.0f,0.0f);
 	registry.emplace<Texture>(playerEntity,texture);
 
+    int w,h;
+    SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+    registry.emplace<Size>(playerEntity,w,h);
 	std::vector<System*> systems;
 
 	MoveSystem moveSystem;
 	DrawSystem drawSystem(&window);
+    CollisionSystem collisionSystem;
 
 	systems.push_back(&moveSystem);
+    systems.push_back(&collisionSystem);
 	systems.push_back(&drawSystem);
-
 	InputManager inputManager;
 
 	std::unordered_map<std::string, bool> events;
@@ -71,7 +76,7 @@ int main(int argc, char *argv[])
 					{
 						if(!yChanged)
 						{
-							events.insert_or_assign(event,true);
+							events.insert_or_assign("up",true);
 							yChanged = true;
 						}
 					}
@@ -79,7 +84,7 @@ int main(int argc, char *argv[])
 					{
 						if(!yChanged)
 						{
-							events.insert_or_assign(event,true);
+							events.insert_or_assign("down",true);
 							yChanged = true;
 						}
 					}
@@ -87,10 +92,37 @@ int main(int argc, char *argv[])
 					{
 						if(!yChanged)
 						{
-							events.insert_or_assign("up",true);
-							events.insert_or_assign("down",true);
+							events.insert_or_assign("up",false);
+							events.insert_or_assign("down",false);
 						}
 					}
+
+                    if(event == "right")
+					{
+						if(!xChanged)
+						{
+							events.insert_or_assign("right",true);
+							xChanged = true;
+						}
+					}
+					else if(event == "left")
+					{
+						if(!xChanged)
+						{
+							events.insert_or_assign("left",true);
+							xChanged = true;
+						}
+					}
+					else
+					{
+						if(!xChanged)
+						{
+							events.insert_or_assign("right",false);
+							events.insert_or_assign("left",false);
+						}
+					}
+
+
 
 					//User requests quit
 					if(e.type == SDL_QUIT)
@@ -98,16 +130,46 @@ int main(int argc, char *argv[])
 						quit = true;
 					}
 				}
-
 				//Top left corner viewport
                 SDL_Rect viewport = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
                 SDL_RenderSetViewport(window.getRenderer(), &viewport);
 
 				Velocity vel = registry.get<Velocity>(playerEntity);
 				
+                if(events["up"])
+                {
+                    vel.dy = -.1;
+                }
+                else if(events["down"])
+                {
+                    vel.dy = .1;
+                }
+                else
+                {
+                    vel.dy = 0;
+                }
+
+                if(events["left"])
+                {
+                    vel.dx = -.1;
+                }
+                else if(events["right"])
+                {
+                    vel.dx = .1;
+                }
+                else
+                {
+                    vel.dx = 0;
+                }
+
 				registry.replace<Velocity>(playerEntity,vel);
 
 				window.clear();
+
+                //render red filled rectangle
+                SDL_Rect fillRect = {500,500,100,100};
+                SDL_SetRenderDrawColor(window.getRenderer(), 0xFF, 0x00, 0x00, 0xFF);
+                SDL_RenderFillRect(window.getRenderer(), &fillRect);
 
 				for(System *s : systems)
 				{
