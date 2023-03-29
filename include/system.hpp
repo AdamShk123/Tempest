@@ -1,4 +1,4 @@
-  #pragma once
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -20,6 +20,15 @@ class MoveSystem : public System
 
     public:
         MoveSystem();
+        void update(entt::registry *registry);
+};
+
+class CollisionSystem : public System
+{
+    private:
+        bool checkCollision(SDL_FRect a, SDL_FRect b); 
+    public:
+        CollisionSystem();
         void update(entt::registry *registry);
 };
 
