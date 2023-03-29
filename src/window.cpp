@@ -1,4 +1,5 @@
 #include "../include/window.hpp"
+#include <SDL2/SDL_video.h>
 
 Window::Window()
 {
@@ -50,7 +51,7 @@ void Window::initWindow()
     else
     {
         // create window
-        window = SDL_CreateWindow("Tempest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        window = SDL_CreateWindow("Tempest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_FULLSCREEN);
         if(window == NULL)
         {
             std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << "\n";
