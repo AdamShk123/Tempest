@@ -10,12 +10,18 @@ struct Texture
 
 struct Position
 {
-    int x;
-    int y;
+    float x;
+    float y;
 };
 
 struct Velocity
 {
     float dx;
     float dy;
+};
+
+struct Size
+{
+    int x;
+    int y;
 };
