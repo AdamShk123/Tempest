@@ -29,7 +29,7 @@ class Window
         void close();
 
         void clear();
-        void draw(SDL_Texture *texture, SDL_Rect *rect);
+        void draw(SDL_Texture *texture, SDL_Rect *rect, SDL_Rect *clipRect = NULL);
         void render();
 
 };

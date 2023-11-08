@@ -1,4 +1,5 @@
 #include "../include/window.hpp"
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
 Window::Window()
@@ -28,9 +29,9 @@ void Window::clear()
     SDL_RenderClear(renderer);
 }
 
-void Window::draw(SDL_Texture *texture, SDL_Rect *rect)
+void Window::draw(SDL_Texture *texture, SDL_Rect *rect, SDL_Rect *clipRect)
 {
-    SDL_RenderCopy(renderer, texture, NULL, rect);
+    SDL_RenderCopy(renderer, texture, clipRect, rect);
 }
 
 void Window::render()

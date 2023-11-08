@@ -26,9 +26,12 @@ class MoveSystem : public System
 class CollisionSystem : public System
 {
     private:
-        bool checkCollision(SDL_FRect a, SDL_FRect b); 
+        bool *blocks[68][120];
+
+        bool checkCollision(SDL_FRect a, SDL_FRect b);
+
     public:
-        CollisionSystem();
+        CollisionSystem(bool (&b)[68][120]);
         void update(entt::registry *registry);
 };
 
